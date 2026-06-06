@@ -30,11 +30,48 @@
             <div class="amount" id="totalAmount">¥0</div>
         </div>
 
-        <button class="donate-btn" onclick="alert('今はまだ寄付できないよ！あとでSupabaseをつなぐよ！')">
+        <button class="donate-btn" onclick="donate()">
             1,000円 支援する
         </button>
 
         <p class="note">※これはサーバー構築練習用のジョークサイトです。実際の決済は行われません。</p>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        
+        const SUPABASE_URL = 'https://gdizyqtxpvslegfyfkua.supabase.co/rest/v1/';
+        const SUPABASE_ANON_KEY = 'sb_publishable_ABxC_cgy7ynTw0YhjUzlxQ_wOgOaidV';
+
+        // データベースへの接続準備
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Supabaseから現在の金額を取得して画面に表示する関数
+        async function fetchTotal() {
+            const { data, error } = await supabase.from('funding').select('total').eq('id', 1).single();
+            if (data) {
+                document.getElementById('totalAmount').innerText = '¥' + data.total.toLocaleString();
+                return data.total;
+            }
+            return 0;
+        }
+
+        // ボタンが押されたときの処理
+        async function donate() {
+            // 今の金額を取得して、1000円足す
+            const currentTotal = await fetchTotal();
+            const newTotal = currentTotal + 1000;
+
+            // Supabaseの数字を新しい金額で上書きする
+            await supabase.from('funding').update({ total: newTotal }).eq('id', 1);
+
+            // 画面を最新の金額に更新
+            fetchTotal();
+            alert("1,000円の支援ありがとうございます！大怪獣のテクスチャ解像度が少し上がりました！");
+        }
+
+        // サイトを開いた瞬間に、現在の金額を読み込む
+        fetchTotal();
+    </script>
 </body>
 </html>
