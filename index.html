@@ -517,7 +517,7 @@
             </div>
             <div class="project-description">
                 <h3>プロジェクトの概要</h3>
-                <p>2024年、日本の特撮界に激震が走らせたあの「シン・スダトラマン」が新生！あなたの1,000円で須田がリアルに！</p>
+                <p>2024年、日本の特撮界に激震が走らせたあの「シン・スダトラマン」が新生！あなたの1,000円で須田がリアルに！。</p>
             </div>
 
             <div style="background: #fff5f5; border: 1px dashed var(--primary-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
@@ -641,11 +641,13 @@
                 <input type="number" id="customAmount" class="custom-amount-input" placeholder="金額入力" oninput="updateFromInput()">
                 <div class="donor-info-form">
                     <input type="text" id="donorName" class="donor-input" placeholder="ハンドルネーム">
-                    <select id="donorPref" class="donor-input">
+                    <select id="donorPref" class="donor-input" onchange="togglePrefOther()">
                         <option value="">都道府県</option>
                         <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="京都府">京都府</option><option value="神奈川県">神奈川県</option><option value="愛知県">愛知県</option>
                         <option value="福岡県">福岡県</option><option value="北海道">北海道</option><option value="沖縄県">沖縄県</option>
+                        <option value="その他">その他</option>
                     </select>
+                    <input type="text" id="donorPrefOther" class="donor-input" placeholder="地域名を入力してください" style="display: none;">
                     <textarea id="donorComment" class="donor-input" placeholder="応援コメント" rows="2"></textarea>
                 </div>
                 <div class="pay-buttons-container">
@@ -669,6 +671,7 @@
             <div class="comments-section">
                 <h3>最新の応援コメント</h3>
                 <div id="commentsList"></div>
+                <button id="loadMoreBtn" class="amount-btn" style="width: 100%; margin-top: 15px; display: none;" onclick="loadMoreComments()">もっと表示</button>
             </div>
         </div>
     </div>
@@ -853,22 +856,52 @@
             loadComments();
         }
 
-        async function loadComments() {
+        let commentPage = 0;
+        const PAGE_SIZE = 10;
+        async function loadComments(append = false) {
+            if (!append) commentPage = 0;
+            const from = commentPage * PAGE_SIZE;
+            const to = from + PAGE_SIZE - 1;
+
             const { data, error } = await supabaseClient
                 .from('comments')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(10);
+                .range(from, to);
             
             if (error) return;
             
             const list = document.getElementById('commentsList');
-            list.innerHTML = data.map(c => `
+            const html = data.map(c => `
                 <div class="comment-item">
                     <div class="comment-name">${c.name} <span style="font-weight:normal; font-size:0.8rem; color:#888;">(${c.prefecture}) ・ ¥${c.amount.toLocaleString()}</span></div>
                     <div class="comment-text">${c.comment}</div>
                 </div>
             `).join('');
+
+            if (append) {
+                list.innerHTML += html;
+            } else {
+                list.innerHTML = html;
+            }
+
+            const btn = document.getElementById('loadMoreBtn');
+            if (data.length < PAGE_SIZE) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'block';
+            }
+        }
+
+        function loadMoreComments() {
+            commentPage++;
+            loadComments(true);
+        }
+
+        function togglePrefOther() {
+            const prefSelect = document.getElementById('donorPref');
+            const prefOther = document.getElementById('donorPrefOther');
+            prefOther.style.display = prefSelect.value === 'その他' ? 'block' : 'none';
         }
 
         async function processPayment() {
@@ -908,7 +941,9 @@
                 
                 const name = document.getElementById('donorName').value;
                 const comment = document.getElementById('donorComment').value;
-                const pref = document.getElementById('donorPref').value;
+                const prefSelect = document.getElementById('donorPref').value;
+                const prefOther = document.getElementById('donorPrefOther').value;
+                const pref = prefSelect === 'その他' ? prefOther : prefSelect;
                 
                 if (name || comment) {
                     await supabaseClient.from('comments').insert([{ 
