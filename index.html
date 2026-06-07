@@ -271,6 +271,13 @@
             width: 90%; max-width: 450px; background: #fff; border: 5px solid #ff0000; border-radius: 15px; padding: 30px; text-align: center; position: relative;
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .scam-close-btn {
+            position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #888;
+          transition: 0.2s; line-height: 1;
+        }
+        .scam-close-btn:hover { color: #000; transform: scale(1.1); }
+
+        
         @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
         /* タイムオーバーの爆破 */
@@ -701,6 +708,7 @@
     <!-- Overlays -->
     <div id="scamOverlay" class="scam-popup-overlay">
         <div class="scam-popup">
+            <div class="scam-close-btn" onclick="closeScamPopup()">×</div>
             <h3>特別限定オファー</h3><p>今すぐ支援で『完全版』視聴権を付与！</p>
             <div style="color:red;font-size:2rem;font-weight:bold;">¥5,000</div>
             <div id="timer" class="countdown-timer">03:00</div>
@@ -968,8 +976,6 @@
         }
 
         function showScamPopup() {
-            if (localStorage.getItem('scamShown')) return;
-            localStorage.setItem('scamShown', 'true');
             document.getElementById('scamOverlay').style.display = 'flex';
             let t = 180; // 3分
             scamInterval = setInterval(() => {
@@ -987,9 +993,13 @@
             setTimeout(() => { overlay.style.display = 'none'; document.getElementById('scamOverlay').style.display = 'none'; }, 3000);
         }
 
+        function closeScamPopup() {
+            clearInterval(scamInterval);
+            document.getElementById('scamOverlay').style.display = 'none';
+        }
+
         function buyScamOffer() { 
             clearInterval(scamInterval); 
-            localStorage.setItem('scamShown', 'true');
             selectedAmount = 5000; 
             document.getElementById('scamOverlay').style.display = 'none'; 
             openPaymentSheet(/iPhone|iPad|Macintosh/.test(navigator.userAgent)?'Apple Pay':'Google Pay'); 
