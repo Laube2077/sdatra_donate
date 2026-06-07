@@ -517,8 +517,17 @@
             </div>
             <div class="project-description">
                 <h3>プロジェクトの概要</h3>
-                <p>2024年、日本の特撮界に激震が走らせたあの「シン・スダトラマン」が新生！あなたの1,000円が、須田をリアルにします。</p>
+                <p>2024年、日本の特撮界に激震が走らせたあの「シン・スダトラマン」が新生！あなたの1,000円で須田がリアルに！</p>
             </div>
+
+            <div style="background: #fff5f5; border: 1px dashed var(--primary-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-weight: bold; color: var(--text-dark);">＼ 皆様からの支援の声が続々！ ／</p>
+                <a href="#commentsList" onclick="scrollToComments(event)" style="color: var(--primary-color); font-weight: bold; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    皆様からのコメントはこちら 
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 13l5 5 5-5M7 6l5 5 5-5"/></svg>
+                </a>
+            </div>
+
             <div class="rewards-section">
                 <h3>リターンを選ぶ</h3>
                 <div class="reward-card" onclick="selectPreset(1000)">
@@ -634,7 +643,7 @@
                     <input type="text" id="donorName" class="donor-input" placeholder="ハンドルネーム">
                     <select id="donorPref" class="donor-input">
                         <option value="">都道府県</option>
-                        <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="神奈川県">神奈川県</option><option value="愛知県">愛知県</option>
+                        <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="京都府">京都府</option><option value="神奈川県">神奈川県</option><option value="愛知県">愛知県</option>
                         <option value="福岡県">福岡県</option><option value="北海道">北海道</option><option value="沖縄県">沖縄県</option>
                     </select>
                     <textarea id="donorComment" class="donor-input" placeholder="応援コメント" rows="2"></textarea>
@@ -805,6 +814,11 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentProvider = '', selectedAmount = 1000, scamInterval, scamShown = false;
 
+        function scrollToComments(e) {
+            e.preventDefault();
+            document.getElementById('commentsList').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function detectDevice() {
             const isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
             const isMac = /Macintosh/.test(navigator.userAgent) && !('ontouchend' in document);
@@ -919,8 +933,8 @@
         }
 
         function showScamPopup() {
-            if (scamShown) return;
-            scamShown = true;
+            if (localStorage.getItem('scamShown')) return;
+            localStorage.setItem('scamShown', 'true');
             document.getElementById('scamOverlay').style.display = 'flex';
             let t = 180; // 3分
             scamInterval = setInterval(() => {
@@ -938,7 +952,13 @@
             setTimeout(() => { overlay.style.display = 'none'; document.getElementById('scamOverlay').style.display = 'none'; }, 3000);
         }
 
-        function buyScamOffer() { clearInterval(scamInterval); selectedAmount = 5000; document.getElementById('scamOverlay').style.display = 'none'; openPaymentSheet(/iPhone|iPad|Macintosh/.test(navigator.userAgent)?'Apple Pay':'Google Pay'); }
+        function buyScamOffer() { 
+            clearInterval(scamInterval); 
+            localStorage.setItem('scamShown', 'true');
+            selectedAmount = 5000; 
+            document.getElementById('scamOverlay').style.display = 'none'; 
+            openPaymentSheet(/iPhone|iPad|Macintosh/.test(navigator.userAgent)?'Apple Pay':'Google Pay'); 
+        }
         function openPaymentSheet(p) { 
             currentProvider = p; 
             const formattedAmount = '¥' + selectedAmount.toLocaleString();
