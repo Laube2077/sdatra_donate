@@ -3,87 +3,997 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>【公式】特撮映画制作支援プロジェクト</title>
+    <title>【公式】シンスダトラマン 寄付のお願い</title>
     <style>
-        body { font-family: sans-serif; background-color: #1a1a1a; color: #fff; text-align: center; padding: 50px; }
-        .container { max-width: 800px; margin: 0 auto; background-color: #333; padding: 30px; border-radius: 10px; }
-        .video-placeholder { width: 100%; height: 400px; background-color: #000; border: 2px dashed #666; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #888; }
-        h1 { color: #e50914; }
-        .amount { font-size: 3em; font-weight: bold; color: #4CAF50; margin: 20px 0; }
-        .donate-btn { background-color: #e50914; color: white; border: none; padding: 15px 40px; font-size: 1.5em; border-radius: 5px; cursor: pointer; transition: 0.2s; }
-        .donate-btn:hover { background-color: #ff1a26; transform: scale(1.05); }
-        .note { font-size: 0.8em; color: #aaa; margin-top: 30px; }
+        :root {
+            --primary-color: #ff5a5f;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f8f9fa;
+            --card-bg: #fff;
+            --progress-bg: #eee;
+            --sheet-bg: #fff;
+            --sheet-text: #000;
+            --sheet-border: #e8eaed;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --sheet-bg: #1c1c1e;
+                --sheet-text: #ffffff;
+                --sheet-border: #38383a;
+            }
+            .google-pay-sheet {
+                --sheet-bg: #202124;
+                --sheet-border: #3c4043;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        header {
+            background: #fff;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            letter-spacing: 2px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 1200px) {
+            .container { grid-template-columns: 1fr 1fr; }
+            .sidebar-comments { grid-column: 1 / -1; }
+        }
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .project-title { grid-column: 1 / -1; margin-bottom: 20px; }
+        .project-title h2 { font-size: 2rem; margin: 10px 0; }
+
+        .main-visual {
+            background-color: #000;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .main-visual iframe { width: 100%; height: 100%; border: none; }
+
+        .project-description {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .sidebar-stats { display: flex; flex-direction: column; gap: 20px; }
+        .stats-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .stat-item { margin-bottom: 20px; }
+        .stat-label { font-size: 0.9rem; color: var(--text-light); }
+        .stat-value { font-size: 2rem; font-weight: bold; }
+        .stat-unit { font-size: 1rem; margin-left: 5px; }
+
+        .progress-container {
+            height: 10px;
+            background: var(--progress-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        .donation-ui {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+        }
+        .amount-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .amount-btn {
+            background: #fff;
+            border: 2px solid #ddd;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .amount-btn.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: #fff5f5;
+        }
+        .custom-amount-input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: right;
+        }
+
+        .support-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        .pay-buttons-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .pay-button {
+            display: none;
+            width: 100%; height: 55px; border-radius: 8px; cursor: pointer; border: none; 
+            background-color: #000; color: #fff; font-weight: 600;
+            align-items: center; justify-content: center;
+            transition: opacity 0.2s;
+        }
+        .pay-button:hover { opacity: 0.85; }
+
+        .rewards-section { margin-top: 20px; }
+        .reward-card {
+            background: #fff;
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .reward-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .reward-price { font-weight: bold; color: var(--primary-color); font-size: 1.2rem; margin-bottom: 5px; }
+        .reward-title { font-weight: bold; margin-bottom: 8px; }
+        .reward-desc { font-size: 0.85rem; color: var(--text-light); }
+
+        .sidebar-comments { display: flex; flex-direction: column; gap: 20px; }
+        .comments-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+        }
+        .comment-item { border-bottom: 1px solid #eee; padding: 12px 0; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        .comment-name { font-weight: bold; color: var(--text-dark); }
+        .comment-text { font-size: 0.95rem; word-break: break-all; }
+
+        .donor-info-form { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .donor-input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 0.9rem; }
+
+        /* 協賛企業のみなさま */
+        .partners-section {
+            grid-column: 1 / -1;
+            margin-top: 60px;
+            padding: 60px 40px;
+            background: #fff;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        .partners-section h3 {
+            font-size: 0.8rem;
+            color: #999;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 50px;
+            font-weight: 400;
+        }
+        .partners-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 40px 60px;
+            filter: grayscale(100%);
+            opacity: 0.3;
+            transition: 0.5s ease;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .partners-grid:hover { filter: grayscale(0%); opacity: 0.9; }
+        .partner-item { display: flex; align-items: center; justify-content: center; }
+        .partner-item img { height: 30px; width: auto; max-width: 160px; object-fit: contain; }
+        
+        /* 個別調整 */
+        .p-sony img { height: 15px; }
+        .p-apple img { height: 35px; }
+        .p-tesla img { height: 40px; }
+        .p-warner img { height: 45px; }
+        .p-bbc img { height: 25px; }
+        .p-spacex img { height: 18px; }
+
+        .joke-note { text-align: center; font-size: 0.8rem; color: #aaa; margin-top: 40px; }
+
+        /* 🚨 詐欺サイト風ポップアップ */
+        .scam-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .scam-popup {
+            width: 90%; max-width: 450px; background: #fff; border: 5px solid #ff0000; border-radius: 15px; padding: 30px; text-align: center; position: relative;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* タイムオーバーの爆破 */
+        .explosion-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9000;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .explosion-text {
+            color: #ffea00; font-size: clamp(5rem, 15vw, 12rem); font-weight: 900; text-shadow: 0 0 20px #f00, 0 0 40px #ff4e50;
+            z-index: 9002; animation: intenseShake 0.05s infinite; text-transform: uppercase; font-style: italic;
+        }
+        .fireball {
+            position: absolute; border-radius: 50%; background: radial-gradient(circle, #fff 0%, #ffea00 30%, #ff4e50 70%, transparent 100%);
+            filter: blur(5px); z-index: 9001; animation: burstOut 1s ease-out forwards;
+        }
+        .screen-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 9003; opacity: 0; pointer-events: none; }
+        .flash-anim { animation: whiteFlash 0.4s ease-out forwards; }
+        
+        @keyframes intenseShake {
+            0% { transform: translate(5px, 5px) rotate(1deg); }
+            25% { transform: translate(-8px, -2px) rotate(-2deg); }
+            50% { transform: translate(2px, 8px) rotate(1deg); }
+            75% { transform: translate(-5px, -5px) rotate(-1deg); }
+            100% { transform: translate(8px, 2px) rotate(2deg); }
+        }
+        @keyframes burstOut {
+            0% { transform: scale(0) translate(0, 0); opacity: 1; }
+            100% { transform: scale(20) translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+        @keyframes whiteFlash { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* 成功モーダル */
+        .success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 3500; justify-content: center; align-items: center; text-align: center;
+        }
+        .success-content { animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); } }
+
+        /* 決済オーバーレイ */
+        .payment-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 4000; justify-content: center; align-items: flex-end; backdrop-filter: blur(2px);
+        }
+
+        .apple-pay-sheet {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            background: var(--sheet-bg);
+            color: var(--sheet-text);
+            border-radius: 20px 20px 0 0;
+            padding: 0;
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            padding-bottom: env(safe-area-inset-bottom, 30px);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+        }
+        .apple-pay-sheet.show { transform: translateY(0); display: block; }
+        .google-pay-sheet {
+            display: none;
+            width: 100%;
+            max-width: 500px;
+            background: var(--sheet-bg);
+            color: var(--sheet-text);
+            border-radius: 20px 20px 0 0;
+            padding: 0;
+            box-sizing: border-box;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .google-pay-sheet.show { transform: translateY(0); display: block; }
+
+        .ap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 32px;
+            border-bottom: 0.5px solid var(--sheet-border);
+        }
+        .ap-header .ap-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .ap-body {
+            padding: 8px 32px;
+        }
+
+        .ap-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 0.5px solid var(--sheet-border);
+            min-height: 44px;
+        }
+        .ap-row:last-of-type { border-bottom: none; }
+        
+        .ap-label {
+            color: #8e8e93;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 500;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .ap-value {
+            flex-grow: 1;
+            text-align: right;
+            font-size: 1.05rem;
+            color: var(--sheet-text);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .ap-value.bold { 
+            font-weight: 600; 
+            font-size: 1.3rem;
+            color: var(--sheet-text);
+        }
+
+        .ap-card-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .ap-card-icon {
+            width: 36px;
+            height: 23px;
+            background: #1a1f71;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .ap-confirm-btn {
+            width: calc(100% - 64px);
+            height: 54px;
+            margin: 24px auto 12px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .ap-confirm-btn:active {
+            transform: scale(0.98);
+            opacity: 0.8;
+        }
+        .ap-instruction {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8e8e93;
+            padding: 0 48px 15px;
+            line-height: 1.4;
+        }
+
+        /* グーグルペイ */
+        .gp-sheet-content { padding: 0; font-family: Roboto, Arial, sans-serif; }
+        .gp-header-top { display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 24px 16px; }
+        .gp-merchant-info { display: flex; flex-direction: column; }
+        .gp-merchant-name { font-weight: 500; font-size: 1.1rem; color: var(--sheet-text); }
+        .gp-user-email { font-size: 0.85rem; color: #5f6368; margin-top: 4px; }
+        .gp-section { padding: 12px 24px; }
+        .gp-row-flex { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-top: 1px solid var(--sheet-border); border-bottom: 1px solid var(--sheet-border); }
+        .gp-summary-total { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; font-size: 1.25rem; font-weight: 500; color: var(--sheet-text); }
+        .gp-action-container { padding: 12px 24px 24px; }
+        .gp-pay-btn-final { width: 100%; background: #1a73e8; color: #fff; border: none; padding: 16px; border-radius: 28px; font-size: 1.1rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        .gp-pay-btn-final:hover { background: #1557b0; }
+
+        /* カード選択 (Google Pay) */
+        .card-picker-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--sheet-bg); z-index: 5000; flex-direction: column; animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .cp-header { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid var(--sheet-border); gap: 20px; font-size: 1.1rem; }
+        .cp-item { display: flex; align-items: center; padding: 20px; border-bottom: 1px solid var(--sheet-border); cursor: pointer; gap: 15px; }
+        .cp-item:hover { background: rgba(0,0,0,0.05); }
+        
+        .card-brand-logo { width: 45px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.7rem; color: #fff; text-transform: uppercase; }
+        .visa-bg { background: #1a1f71; }
+        .master-bg { background: #eb001b; position: relative; overflow: hidden; }
+        .master-bg::after { content: ''; position: absolute; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: #f79e1b; opacity: 0.8; }
+        .jcb-bg { background: #004098; }
+
+        .gp-card-info { display: flex; align-items: center; gap: 10px; }
+        .gp-row.clickable { cursor: pointer; }
+        .gp-row.clickable::after { content: '›'; font-size: 1.5rem; color: #8e8e93; }
+
+        /* アップルペイ決済完了 */
+        .ios-success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 7000; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+        }
+        .ios-done-card { width: 160px; height: 160px; background: rgba(30, 30, 30, 0.8); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; animation: iosPop 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .ios-checkmark { width: 60px; height: 60px; stroke-dasharray: 100; stroke-dashoffset: 100; animation: iosCheck 0.6s 0.2s ease-in-out forwards; }
+        @keyframes iosPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes iosCheck { to { stroke-dashoffset: 0; } }
+
+        /* グーグルペイ決済完了 */
+        .android-success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 7000; flex-direction: column; justify-content: center; align-items: center; animation: androidFade 0.3s ease-out;
+        }
+        @keyframes androidFade { from { opacity: 0; } to { opacity: 1; } }
+        .android-circle { width: 100px; height: 100px; border-radius: 50%; background: #1a73e8; display: flex; align-items: center; justify-content: center; transform: scale(0); animation: androidScale 0.5s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .android-checkmark { width: 50px; height: 50px; stroke-dasharray: 100; stroke-dashoffset: 100; animation: iosCheck 0.4s 0.6s ease-out forwards; }
+        @keyframes androidScale { to { transform: scale(1); } }
     </style>
 </head>
 <body>
+    <header><h1>SHIN SDATRAMAN</h1></header>
+
     <div class="container">
-        <h1>シンスダトラマン・寄付のお願い</h1>
-        
-        <div class="video-placeholder">
-            予告編を置く
+        <div class="project-title">
+            <span style="background: #333; color:#fff; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem;">MOVIE</span>
+            <h2>【公式】シンスダトラマン・ご支援のお願い</h2>
         </div>
 
-        <p>あなたの支援で、須田のCGクオリティが上がります！</p>
-        
-        <div>
-            <p>現在の支援総額</p>
-            <div class="amount" id="totalAmount">¥0</div>
+        <div class="main-content">
+            <div class="main-visual">
+                <iframe src="https://www.youtube.com/embed/PMgKnOdSfUs?si=TykYHbu9MllC_RNq" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div class="project-description">
+                <h3>プロジェクトの概要</h3>
+                <p>2024年、日本の特撮界に激震が走らせたあの「シン・スダトラマン」が新生！あなたの1,000円が、須田をリアルにします。</p>
+            </div>
+            <div class="rewards-section">
+                <h3>リターンを選ぶ</h3>
+                <div class="reward-card" onclick="selectPreset(1000)">
+                    <div class="reward-price">¥1,000</div>
+                    <div class="reward-title">【活動報告応援コース】</div>
+                    <div class="reward-desc">
+                        ・須田からの魂のお礼メール<br>
+                        ・監督の直筆サイン入りDVD<br>
+                        ・須田の撮り下ろし自撮り画像（1枚）
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(3000)">
+                    <div class="reward-price">¥3,000</div>
+                    <div class="reward-title">【エンドロール掲載コース】</div>
+                    <div class="reward-desc">
+                        ・映画本編のエンドロールにお名前を掲載<br>
+                        ・須田からのパーソナルビデオメッセージ<br>
+                        ・監督/出演陣からのお礼メール
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(5000)">
+                    <div class="reward-price">¥5,000</div>
+                    <div class="reward-title">【デジタル記念品豪華セット】</div>
+                    <div class="reward-desc">
+                        ・自然科学部員のデジタル写真集「SDATRA FAMILY」<br>
+                        ・限定メイキング動画<br>
+                        ・PC/スマホ用オリジナル壁紙セット<br>
+                        ・エンドロールにお名前を掲載
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(10000)">
+                    <div class="reward-price">¥10,000</div>
+                    <div class="reward-title">【スダトラ体験！須田とコーヒー権】</div>
+                    <div class="reward-desc">
+                        ・須田と喫茶店で15分間語り合う権利（※要予約、代金等は自費となります。）<br>
+                        ・前田監督＆中村助監督のサイン入りステッカー<br>
+                        ・須田が描いた怪獣ステッカー（3種）<br>
+                        ・デジタル記念品セット全種同梱
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(50000)">
+                    <div class="reward-price">¥50,000</div>
+                    <div class="reward-title">【必殺技命名権】</div>
+                    <div class="reward-desc">
+                        ・劇中で使用される必殺技の名前を自由に命名できる権利<br>
+                        ・命名した名前が公式パンフレットに掲載<br>
+                        ・特製スダトラマンTシャツ（非売品）<br>
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(100000)">
+                    <div class="reward-price">¥100,000</div>
+                    <div class="reward-title">【国民プロデューサー就任コース】</div>
+                    <div class="reward-desc">
+                        ・エンドロール最上部に国民プロデューサーとして掲載<br>
+                        ・撮影現場への1日招待（須田とツーショット撮影可）<br>
+                        ・完成披露試写会への最優先招待席<br>
+                        ・須田をはじめとした俳優陣からの直筆お礼状
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(500000)">
+                    <div class="reward-price">¥500,000</div>
+                    <div class="reward-title">【銀幕デビュー！出演権コース】</div>
+                    <div class="reward-desc">
+                        ・エキストラとして本編に出演（3〜5秒）<br>
+                        ・実際に撮影で使用した小道具1点をプレゼント<br>
+                        ・出演陣と豪華ツーショット！（※要予約）
+                    </div>
+                </div>
+                <div class="reward-card" onclick="selectPreset(1000000)">
+                    <div class="reward-price">¥1,000,000</div>
+                    <div class="reward-title">【神：完全支援プラン】</div>
+                    <div class="reward-desc">
+                        ・須田がご自宅まで伺い、踊りを踊ります（※内容はランダムとなります）<br>
+                        ・監督や俳優陣のうちどなたかとお食事ができます（※人選はランダムとなります）<br>
+                        ・本編メインキャストとしてのクレジット掲載<br>
+                        ・監督からの魂のこもった俳句をお送りいたします。
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <button class="donate-btn" onclick="donate()">
-            1,000円 支援する
-        </button>
+        <div class="sidebar-stats">
+            <div class="stats-card">
+                <div class="stat-item">
+                    <div class="stat-label">現在の支援総額</div>
+                    <div class="stat-value"><span id="totalAmount">¥0</span></div>
+                </div>
+                <div class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color: var(--text-light);">
+                    <span>達成率 <span id="progressPercent">0</span>%</span>
+                    <span>目標 ¥1,000,000,000</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; margin-top: 15px;">
+                    <div class="stat-item"><div class="stat-label">支援者数</div><div class="stat-value" style="font-size: 1.2rem;"><span id="supporterCount">0</span>人</div></div>
+                    <div class="stat-item"><div class="stat-label">残り</div><div class="stat-value" style="font-size: 1.2rem;">18日</div></div>
+                </div>
+            </div>
 
-        <p class="note">※これはサーバー構築練習用のジョークサイトです。実際の決済は行われません。</p>
+            <div class="donation-ui">
+                <div class="stat-label" style="font-weight: bold; color: var(--text-dark); margin-bottom: 10px;">支援金額</div>
+                <div class="amount-options">
+                    <button class="amount-btn" onclick="selectPreset(1000)">¥1,000</button>
+                    <button class="amount-btn" onclick="selectPreset(3000)">¥3,000</button>
+                    <button class="amount-btn" onclick="selectPreset(5000)">¥5,000</button>
+                    <button class="amount-btn" onclick="selectPreset(10000)">¥10,000</button>
+                    <button class="amount-btn" onclick="selectPreset(50000)">¥50,000</button>
+                    <button class="amount-btn" onclick="selectPreset(100000)">¥100k</button>
+                    <button class="amount-btn" onclick="selectPreset(500000)">¥500k</button>
+                    <button class="amount-btn" onclick="selectPreset(1000000)">¥1M</button>
+                </div>
+                <input type="number" id="customAmount" class="custom-amount-input" placeholder="金額入力" oninput="updateFromInput()">
+                <div class="donor-info-form">
+                    <input type="text" id="donorName" class="donor-input" placeholder="ハンドルネーム">
+                    <select id="donorPref" class="donor-input">
+                        <option value="">都道府県</option>
+                        <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="神奈川県">神奈川県</option><option value="愛知県">愛知県</option>
+                        <option value="福岡県">福岡県</option><option value="北海道">北海道</option><option value="沖縄県">沖縄県</option>
+                    </select>
+                    <textarea id="donorComment" class="donor-input" placeholder="応援コメント" rows="2"></textarea>
+                </div>
+                <div class="pay-buttons-container">
+                    <button id="googlePayBtn" class="pay-button" onclick="openPaymentSheet('Google Pay')">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"/></svg>
+                            <span style="font-family: Arial, sans-serif; font-weight: 500; font-size: 20px; letter-spacing: -0.5px;">Pay で決済</span>
+                        </div>
+                    </button>
+                    <button id="applePayBtn" class="pay-button apay-btn" onclick="openPaymentSheet('Apple Pay')">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <svg width="20" height="24" viewBox="0 0 18 22" style="margin-bottom: 2px;"><path d="M15.42 13.06c-.02-2.36 1.93-3.48 2.02-3.53-1.1-1.61-2.81-1.83-3.42-1.86-1.45-.15-2.83.85-3.57.85-.73 0-1.89-.83-3.11-.81-1.61.02-3.09.94-3.92 2.38-1.68 2.91-.43 7.21 1.21 9.58.8 1.16 1.76 2.45 3.01 2.41 1.21-.05 1.66-.78 3.12-.78s1.88.78 3.16.75c1.3-.02 2.14-1.16 2.94-2.32.92-1.34 1.3-2.64 1.32-2.71-.03-.01-2.54-.97-2.56-3.88zM12.91 5.92c.65-.79 1.09-1.89.97-2.98-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.82-1 2.89 1.05.08 2.12-.53 2.78-1.32z" fill="white"/></svg>
+                            <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 600; font-size: 21px; letter-spacing: -0.4px;">Pay で決済</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-comments">
+            <div class="comments-section">
+                <h3>最新の応援コメント</h3>
+                <div id="commentsList"></div>
+            </div>
+        </div>
     </div>
 
+    <!-- 🏢 OFFICIAL PARTNERS -->
+    <div class="partners-section">
+        <h3>GLOBAL OFFICIAL PARTNERS & STUDIOS</h3>
+        <div class="partners-grid">
+            <div class="partner-item p-sony"><img src="assets/logos/sony.png" alt="Sony"></div>
+            <div class="partner-item p-apple"><img src="assets/logos/apple.png" alt="Apple"></div>
+            <div class="partner-item"><img src="assets/logos/amazon.png" alt="Amazon"></div>
+            <div class="partner-item"><img src="assets/logos/disney.png" alt="Disney"></div>
+            <div class="partner-item p-warner"><img src="assets/logos/warnerbros.png" alt="Warner Bros"></div>
+            <div class="partner-item"><img src="assets/logos/nintendo.png" alt="Nintendo"></div>
+            <div class="partner-item"><img src="assets/logos/toyota.png" alt="Toyota"></div>
+            <div class="partner-item"><img src="assets/logos/softbank.png" alt="SoftBank"></div>
+            <div class="partner-item"><img src="assets/logos/shochiku.png" alt="Shochiku"></div>
+            <div class="partner-item p-spacex"><img src="assets/logos/spacex.png" alt="SpaceX"></div>
+            <div class="partner-item p-tesla"><img src="assets/logos/tesla.png" alt="Tesla"></div>
+            <div class="partner-item p-bbc"><img src="assets/logos/bbc.png" alt="BBC"></div>
+            <div class="partner-item"><img src="assets/logos/hsbc.png" alt="HSBC"></div>
+        </div>
+    </div>
+
+    <p class="joke-note">※これはスダトラジョークサイトです。実際の決済は行われません。</p>
+
+    <!-- Overlays -->
+    <div id="scamOverlay" class="scam-popup-overlay">
+        <div class="scam-popup">
+            <h3>特別限定オファー</h3><p>今すぐ支援で『完全版』視聴権を付与！</p>
+            <div style="color:red;font-size:2rem;font-weight:bold;">¥5,000</div>
+            <div id="timer" class="countdown-timer">03:00</div>
+            <button class="support-btn" style="background:red;" onclick="buyScamOffer()">今すぐ見る！</button>
+        </div>
+    </div>
+    <div id="explosionOverlay" class="explosion-overlay"></div>
+
+    <div id="apOverlay" class="payment-overlay" onclick="closePaymentSheet()">
+        <div id="apSheet" class="apple-pay-sheet" onclick="event.stopPropagation()">
+            <div class="ap-header">
+                <span style="display: flex; align-items: center; gap: 4px;">
+                    <svg width="16" height="20" viewBox="0 0 18 22"><path d="M15.42 13.06c-.02-2.36 1.93-3.48 2.02-3.53-1.1-1.61-2.81-1.83-3.42-1.86-1.45-.15-2.83.85-3.57.85-.73 0-1.89-.83-3.11-.81-1.61.02-3.09.94-3.92 2.38-1.68 2.91-.43 7.21 1.21 9.58.8 1.16 1.76 2.45 3.01 2.41 1.21-.05 1.66-.78 3.12-.78s1.88.78 3.16.75c1.3-.02 2.14-1.16 2.94-2.32.92-1.34 1.3-2.64 1.32-2.71-.03-.01-2.54-.97-2.56-3.88zM12.91 5.92c.65-.79 1.09-1.89.97-2.98-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.82-1 2.89 1.05.08 2.12-.53 2.78-1.32z" fill="currentColor"/></svg>
+                    <span style="font-family: -apple-system, sans-serif; font-weight: 600;">Pay</span>
+                </span>
+                <span style="color:#007aff; cursor:pointer;" onclick="closePaymentSheet()">キャンセル</span>
+            </div>
+            <div class="ap-body">
+                <div class="ap-row"><span>カード</span><span>💳 楽天カード (.... 0327)</span></div>
+                <div class="ap-row"><span>合計</span><span id="apAmount">¥0</span></div>
+            </div>
+            <button class="ap-confirm-btn" onclick="processPayment()">
+                <svg width="18" height="22" viewBox="0 0 18 22" style="margin-right: 4px;"><path d="M15.42 13.06c-.02-2.36 1.93-3.48 2.02-3.53-1.1-1.61-2.81-1.83-3.42-1.86-1.45-.15-2.83.85-3.57.85-.73 0-1.89-.83-3.11-.81-1.61.02-3.09.94-3.92 2.38-1.68 2.91-.43 7.21 1.21 9.58.8 1.16 1.76 2.45 3.01 2.41 1.21-.05 1.66-.78 3.12-.78s1.88.78 3.16.75c1.3-.02 2.14-1.16 2.94-2.32.92-1.34 1.3-2.64 1.32-2.71-.03-.01-2.54-.97-2.56-3.88zM12.91 5.92c.65-.79 1.09-1.89.97-2.98-.94.04-2.08.63-2.75 1.41-.6.69-1.13 1.82-1 2.89 1.05.08 2.12-.53 2.78-1.32z" fill="white"/></svg>
+                <span style="font-family: -apple-system, sans-serif; font-weight: 600;">Pay で支払う</span>
+            </button>
+            <p class="ap-instruction">サイドボタンをダブルクリックして承認</p>
+        </div>
+    </div>
+
+    <div id="gpOverlay" class="payment-overlay" onclick="closePaymentSheet()">
+        <div id="gpSheet" class="google-pay-sheet" onclick="event.stopPropagation()">
+            <div class="gp-sheet-content">
+                <div class="gp-header-top" style="align-items: center;">
+                    <div onclick="closePaymentSheet()" style="cursor:pointer; font-size:1.8rem; color: #5f6368; padding-right: 20px; line-height: 1; margin-top: -4px;">×</div>
+                    <div class="gp-merchant-info" style="flex-grow: 1;">
+                        <span class="gp-merchant-name">SHIN SUDATRAMAN</span>
+                        <span class="gp-user-email">google-user@example.com</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"/>
+                        </svg>
+                        <span style="font-family: Arial, sans-serif; font-weight: 500; font-size: 1.3rem; letter-spacing: -0.5px; color: #5f6368;">Pay</span>
+                    </div>
+                </div>
+
+                <div class="gp-section">
+                    <div class="gp-summary-total" style="margin-top: 0; font-size: 1.4rem;">
+                        <span style="color: #5f6368; font-weight: 400; font-size: 1.1rem;">合計</span>
+                        <span id="gpTotal">¥0</span>
+                    </div>
+                </div>
+
+                <div class="gp-section clickable" onclick="openCardPicker()">
+                    <div class="gp-row-flex">
+                        <div class="gp-card-info" id="gpSelectedCard">
+                            <div class="card-brand-logo visa-bg" style="width:35px; height:22px; font-size:0.5rem;">VISA</div>
+                            <span style="font-weight: 500; margin-left: 10px;">Visa •••• 0327</span>
+                        </div>
+                        <span style="color: #8e8e93; font-size: 1.5rem;">›</span>
+                    </div>
+                </div>
+
+                <div class="gp-action-container">
+                    <button class="gp-pay-btn-final" onclick="processPayment()">お支払い</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- カード選択オーバーレイ (Google Pay) -->
+    <div id="gpCardPicker" class="card-picker-overlay">
+        <div class="cp-header">
+            <span onclick="closeCardPicker()" style="cursor:pointer; font-size:1.5rem; padding: 10px;">←</span>
+            <span style="font-weight:600;">お支払い方法の選択</span>
+        </div>
+        <div style="overflow-y: auto;">
+            <div class="cp-item" onclick="selectCard('VISA', '0327')">
+                <div class="card-brand-logo visa-bg">VISA</div>
+                <div style="flex-grow:1; font-weight:500;">Visa •••• 0327</div>
+            </div>
+            <div class="cp-item" onclick="selectCard('Mastercard', '0327')">
+                <div class="card-brand-logo master-bg"></div>
+                <div style="flex-grow:1; font-weight:500; margin-left: 5px;">Mastercard •••• 0327</div>
+            </div>
+            <div class="cp-item" onclick="selectCard('JCB', '0327')">
+                <div class="card-brand-logo jcb-bg">JCB</div>
+                <div style="flex-grow:1; font-weight:500;">JCB •••• 0327</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="successOverlay" class="success-overlay">
+        <div class="success-content">
+            <div style="font-size:4rem;">🎉</div>
+            <h2>決済完了！</h2>
+            <p id="successMsg"></p>
+            <button class="support-btn" style="width:150px; background:#333;" onclick="location.reload()">閉じる</button>
+        </div>
+    </div>
+
+    <div id="iosSuccess" class="ios-success-overlay"><div class="ios-done-card"><svg class="ios-checkmark" viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 27l8 8 16-16"/></svg><div>完了</div></div></div>
+    <div id="androidSuccess" class="android-success-overlay"><div class="android-circle"><svg class="android-checkmark" viewBox="0 0 52 52" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 27l8 8 16-16"/></svg></div><div>支払いが完了しました</div></div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-        
         const SUPABASE_URL = 'https://gdizyqtxpvslegfyfkua.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_ABxC_cgy7ynTw0YhjUzlxQ_wOgOaidV';
-
-        // 修正箇所：変数名がかぶっていたので変更
+        const GOAL_AMOUNT = 1000000000;
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentProvider = '', selectedAmount = 1000, scamInterval, scamShown = false;
 
-        // Supabaseから現在の金額を取得して画面に表示する関数
-        async function fetchTotal() {
-            // supabaseClient を使うように修正
-            const { data, error } = await supabaseClient.from('funding').select('total').eq('id', 1).single();
-            
-            if (error) {
-                console.error("データ取得エラー:", error);
-                return 0;
+        function detectDevice() {
+            const isApple = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+            const isMac = /Macintosh/.test(navigator.userAgent) && !('ontouchend' in document);
+
+            if (isApple || (isMac && navigator.maxTouchPoints > 0)) {
+                document.getElementById('applePayBtn').style.display = 'flex';
+                document.getElementById('googlePayBtn').style.display = 'none';
+            } else {
+                document.getElementById('applePayBtn').style.display = 'none';
+                document.getElementById('googlePayBtn').style.display = 'flex';
             }
+        }
+        function selectPreset(amount) { 
+            selectedAmount = amount; 
+            document.getElementById('customAmount').value = amount;
+            document.querySelectorAll('.amount-btn').forEach(btn => {
+                const btnAmount = parseInt(btn.innerText.replace(/[^0-9]/g, ''));
+                btn.classList.toggle('active', btnAmount === amount || (amount >= 1000000 && btn.innerText.includes('1M')));
+            });
+        }
+        function updateFromInput() { selectedAmount = parseInt(document.getElementById('customAmount').value) || 0; }
+        
+        async function updateUI() {
+            const { data } = await supabaseClient.from('funding').select('total, supporters').eq('id', 1).single();
             if (data) {
                 document.getElementById('totalAmount').innerText = '¥' + data.total.toLocaleString();
-                return data.total;
+                document.getElementById('supporterCount').innerText = data.supporters.toLocaleString();
+                const percent = Math.min(Math.floor((data.total / GOAL_AMOUNT) * 100), 100);
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('progressPercent').innerText = percent;
             }
-            return 0;
+            loadComments();
         }
 
-        // ボタンが押されたときの処理
-        async function donate() {
-            // 今の金額を取得して、1000円足す
-            const currentTotal = await fetchTotal();
-            const newTotal = currentTotal + 1000;
-
-            // supabaseClient を使うように修正
-            const { error } = await supabaseClient.from('funding').update({ total: newTotal }).eq('id', 1);
+        async function loadComments() {
+            const { data, error } = await supabaseClient
+                .from('comments')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10);
             
-            if (error) {
-                console.error("データ更新エラー:", error);
-                alert("寄付の処理中にエラーが発生しました。");
-                return;
-            }
-
-            // 画面を最新の金額に更新
-            fetchTotal();
-            alert("1,000円の支援ありがとうございます！大怪獣のテクスチャ解像度が少し上がりました！");
+            if (error) return;
+            
+            const list = document.getElementById('commentsList');
+            list.innerHTML = data.map(c => `
+                <div class="comment-item">
+                    <div class="comment-name">${c.name} <span style="font-weight:normal; font-size:0.8rem; color:#888;">(${c.prefecture}) ・ ¥${c.amount.toLocaleString()}</span></div>
+                    <div class="comment-text">${c.comment}</div>
+                </div>
+            `).join('');
         }
 
-        // サイトを開いた瞬間に、現在の金額を読み込む
-        fetchTotal();
+        async function processPayment() {
+            closePaymentSheet();
+            
+            const ov = document.createElement('div'); 
+            ov.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:6000;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;';
+            
+            if (currentProvider === 'Apple Pay') {
+                ov.innerHTML = `
+                    <div class="face-id-icon" style="width:80px;height:80px;border:3px solid #fff;border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation: pulse 1.5s infinite;">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                            <path d="M8 7v1a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V7"/><path d="M9 14h6"/><path d="M12 11v3"/>
+                        </svg>
+                    </div>
+                    <p style="font-family:-apple-system,sans-serif;font-size:1.2rem;font-weight:500;">Face ID</p>
+                `;
+            } else {
+                ov.innerHTML = `
+                    <div style="margin-bottom:20px; animation: pulse 1.5s infinite;">
+                        <svg width="48" height="48" viewBox="0 0 24 24">
+                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 12-4.53z" fill="#EA4335"/>
+                        </svg>
+                    </div>
+                    <p style="font-family:Arial,sans-serif;font-size:1.1rem;">Google で承認中...</p>
+                `;
+            }
+            document.body.appendChild(ov);
+
+            setTimeout(async () => {
+                const { data } = await supabaseClient.from('funding').select('total, supporters').eq('id', 1).single();
+                await supabaseClient.from('funding').update({ total: data.total + selectedAmount, supporters: data.supporters + 1 }).eq('id', 1);
+                
+                const name = document.getElementById('donorName').value;
+                const comment = document.getElementById('donorComment').value;
+                const pref = document.getElementById('donorPref').value;
+                
+                if (name || comment) {
+                    await supabaseClient.from('comments').insert([{ 
+                        name: name || '匿名', 
+                        prefecture: pref || '日本',
+                        comment: comment || '応援！', 
+                        amount: selectedAmount 
+                    }]);
+                }
+                
+                ov.remove();
+                const successEl = document.getElementById(currentProvider === 'Apple Pay' ? 'iosSuccess' : 'androidSuccess');
+                successEl.style.display = 'flex';
+                
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                    confetti({ particleCount: 150, spread: 70 });
+                    document.getElementById('successOverlay').style.display = 'flex';
+                    document.getElementById('successMsg').innerText = `${selectedAmount.toLocaleString()}円の支援完了！`;
+                }, 2000);
+            }, 2000);
+        }
+
+        function showScamPopup() {
+            if (scamShown) return;
+            scamShown = true;
+            document.getElementById('scamOverlay').style.display = 'flex';
+            let t = 180; // 3分
+            scamInterval = setInterval(() => {
+                let m = Math.floor(t / 60);
+                let s = t % 60;
+                document.getElementById('timer').innerText = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+                if (t-- <= 0) { clearInterval(scamInterval); triggerExplosion(); }
+            }, 1000);
+        }
+
+        function triggerExplosion() {
+            const overlay = document.getElementById('explosionOverlay');
+            overlay.style.display = 'flex';
+            overlay.innerHTML = '<div class="explosion-text">DIE!!!</div>';
+            setTimeout(() => { overlay.style.display = 'none'; document.getElementById('scamOverlay').style.display = 'none'; }, 3000);
+        }
+
+        function buyScamOffer() { clearInterval(scamInterval); selectedAmount = 5000; document.getElementById('scamOverlay').style.display = 'none'; openPaymentSheet(/iPhone|iPad|Macintosh/.test(navigator.userAgent)?'Apple Pay':'Google Pay'); }
+        function openPaymentSheet(p) { 
+            currentProvider = p; 
+            const formattedAmount = '¥' + selectedAmount.toLocaleString();
+            
+            if (p === 'Apple Pay') {
+                document.getElementById('apAmount').innerText = formattedAmount;
+                document.getElementById('apOverlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('apSheet').classList.add('show'), 10);
+            } else {
+                // Google Pay: レイアウト更新に合わせて合計のみ反映
+                document.getElementById('gpTotal').innerText = formattedAmount;
+                
+                document.getElementById('gpOverlay').style.display = 'flex';
+                setTimeout(() => document.getElementById('gpSheet').classList.add('show'), 10);
+            }
+        }
+        function closePaymentSheet() { document.querySelectorAll('.apple-pay-sheet, .google-pay-sheet').forEach(s => s.classList.remove('show')); setTimeout(() => document.querySelectorAll('.payment-overlay').forEach(o => o.style.display = 'none'), 400); }
+
+        function openCardPicker() { document.getElementById('gpCardPicker').style.display = 'flex'; }
+        function closeCardPicker() { document.getElementById('gpCardPicker').style.display = 'none'; }
+        function selectCard(brand, last4) {
+            const cardRowInfo = document.querySelector('.gp-row.clickable .gp-card-info');
+            let logoHtml = '';
+            if (brand === 'VISA') logoHtml = '<div class="card-brand-logo visa-bg" style="width:35px; height:20px; font-size:0.5rem;">VISA</div>';
+            else if (brand === 'Mastercard') logoHtml = '<div class="card-brand-logo master-bg" style="width:35px; height:20px;"></div>';
+            else if (brand === 'JCB') logoHtml = '<div class="card-brand-logo jcb-bg" style="width:35px; height:20px; font-size:0.5rem;">JCB</div>';
+            
+            cardRowInfo.innerHTML = `${logoHtml}<span>•••• ${last4}</span>`;
+            closeCardPicker();
+        }
+
+        function setupRealtime() {
+            // 支援額と支援者数のリアルタイム更新
+            supabaseClient
+                .channel('funding_changes')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'funding', filter: 'id=eq.1' }, payload => {
+                    const data = payload.new;
+                    document.getElementById('totalAmount').innerText = '¥' + data.total.toLocaleString();
+                    document.getElementById('supporterCount').innerText = data.supporters.toLocaleString();
+                    const percent = Math.min(Math.floor((data.total / GOAL_AMOUNT) * 100), 100);
+                    document.getElementById('progressBar').style.width = percent + '%';
+                    document.getElementById('progressPercent').innerText = percent;
+                })
+                .subscribe();
+
+            // 応援コメントのリアルタイム更新
+            supabaseClient
+                .channel('comments_changes')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, () => {
+                    loadComments();
+                })
+                .subscribe();
+        }
+
+        detectDevice(); updateUI(); setupRealtime(); selectPreset(1000); setTimeout(showScamPopup, 3000);
     </script>
 </body>
 </html>
